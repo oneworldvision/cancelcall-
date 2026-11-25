@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="icon" href="data:,">
+    <title>Cancel Call Management System</title>
+    <style>
+        :root {
+            --bg: #e0e5ec;
+            --tx: #3d4468;
+            --mu: #7b84a3;
+            --ac: #5b6cff;
+            --lt: #fff;
+            --dk: #a3b1c6;
+            --ok: #1f9d6b;
+            --er: #d64560;
+            --wn: #c77d12
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--tx);
+            font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif
+        }
+
+        .nu {
+            background: var(--bg);
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px var(--dk), -8px -8px 16px var(--lt)
+        }
+
+        .ins {
+            box-shadow: inset 4px 4px 8px var(--dk), inset -4px -4px 8px var(--lt);
+            border-radius: 12px
+        }
+
+        input:not([type=checkbox]),
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 0;
+            outline: 0;
+            background: var(--bg);
+            color: var(--tx);
+            font: inherit;
+            border-radius: 12px;
+            box-shadow: inset 4px 4px 8px var(--dk), inset -4px -4px 8px var(--lt)
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus,
+        .btn:focus-visible {
+            outline: 2px solid var(--ac);
+            outline-offset: 2px
+        }
+
+        input[readonly] {
+            color: var(--mu)
+        }
+
+        .btn {
+            border: 0;
+            cursor: pointer;
+            background: var(--bg);
+            color: var(--tx);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font: inherit;
+            font-weight: 600;
+            box-shadow: 5px 5px 10px var(--dk), -5px -5px 10px var(--lt);
+            transition: box-shadow .15s
+        }
+
+        .btn:active,
+        .btn.on {
+            box-shadow: inset 3px 3px 6px var(--dk), inset -3px -3px 6px var(--lt)
+        }
+
+        .btn.pri {
+            color: var(--ac)
+        }
+
+        .btn.ok {
+            color: var(--ok)
+        }
+
+        .btn.no {
+            color: var(--er)
+        }
+
+        .btn.sm {
+            padding: 6px 12px;
+            font-size: .85rem
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 22px
+        }
+
+        .card {
+            padding: 22px;
+            margin: 0 0 22px
+        }
+
+        .bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 22px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            margin: 0
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin: 0 0 14px
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 22px
+        }
+
+        .stat {
+            border: 0;
+            cursor: pointer;
+            padding: 18px;
+            text-align: left;
+            font: inherit;
+            color: var(--tx)
+        }
+
+        .stat b {
+            display: block;
+            font-size: 1.9rem
+        }
+
+        .stat.sel {
+            box-shadow: inset 6px 6px 12px var(--dk), inset -6px -6px 12px var(--lt)
+        }
+
+        .frm {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px
+        }
+
+        .full {
+            grid-column: 1/-1
+        }
+
+        label.l {
+            display: block;
+            font-size: .8rem;
+            color: var(--mu);
+            margin: 0 0 5px 4px;
+            font-weight: 600
+        }
+
+        .tw {
+            overflow-x: auto
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 640px
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #cfd6e2;
+            vertical-align: top
+        }
+
+        th {
+            font-size: .8rem;
+            color: var(--mu)
+        }
+
+        tr.cl {
+            cursor: pointer
+        }
+
+        tr.cl:hover {
+            background: #d8dee8
+        }
+
+        .bd {
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: .8rem;
+            font-weight: 700;
+            box-shadow: inset 2px 2px 4px var(--dk), inset -2px -2px 4px var(--lt)
+        }
+
+        .Pending {
+            color: var(--wn)
+        }
+
+        .Approved {
+            color: var(--ok)
+        }
+
+        .Rejected {
+            color: var(--er)
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px
+        }
+
+        .chip {
+            padding: 6px 14px;
+            font-size: .85rem;
+            display: inline-block
+        }
+
+        .login {
+            max-width: 460px;
+            margin: 7vh auto
+        }
+
+        .login input {
+            margin-bottom: 14px
+        }
+
+        .ck {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 14px;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 12px;
+            box-shadow: 4px 4px 8px var(--dk), -4px -4px 8px var(--lt)
+        }
+
+        .cc {
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 16px;
+            box-shadow: inset 3px 3px 6px var(--dk), inset -3px -3px 6px var(--lt)
+        }
+
+        .ov {
+            position: fixed;
+            inset: 0;
+            background: #0006;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 9
+        }
+
+        .md {
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow: auto;
+            margin: 0
+        }
+
+        #toast {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            z-index: 10;
+            display: grid;
+            gap: 10px
+        }
+
+        .tst {
+            background: var(--bg);
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: 5px 5px 10px var(--dk), -5px -5px 10px var(--lt);
+            border-left: 4px solid var(--ok)
+        }
+
+        .tst.er {
+            border-color: var(--er)
+        }
+
+        .mu {
+            color: var(--mu)
+        }
+
+        .bc {
+            margin-bottom: 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center
+        }
+
+        .kv {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 6px 12px;
+            margin-bottom: 16px
+        }
+
+        .kv span:nth-child(odd) {
+            color: var(--mu)
+        }
+
+        @media(max-width:600px) {
+            .wrap {
+                padding: 12px
+            }
+
+            .kv {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <div id="toast"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        /* ===== CONFIG: paste your Supabase project values ===== */
+        const SUPABASE_URL = 'https://iyuodqxnfoiidbplnkpr.supabase.co', SUPABASE_KEY = 'sb_publishable_WhOWHyBamquKx2QkJMSDPA_nEkAaPvT';
+        /* ====================================================== */
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const $ = s => document.querySelector(s);
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const RN = { esa: 'ESA', sde: 'SDE', bm: 'BM', admin: 'Super Admin' };
+        let S = JSON.parse(sessionStorage.getItem('s') || 'null'), tab = '', mode = 'esa', F = {}, PG = 0, ef = '', sf = '', D = [], DR = [], GK = [], O = {}, C = {}, timer, rows = [], prev, pc, busy = 0;
+        const save = () => sessionStorage.setItem('s', JSON.stringify(S));
+        const sha = async (u, p) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(u.trim().toLowerCase() + ':' + p)))].map(b => b.toString(16).padStart(2, '0')).join('');
+        const fd = d => d ? new Date(d + (d.length == 10 ? 'T00:00:00' : '')).toLocaleDateString('en-GB') : '';
+        const ft = d => d ? new Date(d).toLocaleString('en-GB') : '';
+        const bd = s => `<span class="bd ${s}">${s}</span>`;
+        function toast(m, e) { const t = document.createElement('div'); t.className = 'tst' + (e ? ' er' : ''); t.textContent = m; $('#toast').append(t); setTimeout(() => t.remove(), 3800) }
+        const ok = r => r.error ? (toast(r.error.code === '23505' ? 'This entry already exists' : r.error.message, 1), false) : true;
+        function vd(y, m, d) { const x = new Date(`${y}-${m}-${d}T00:00:00Z`); return x.getUTCMonth() + 1 == +m && x.getUTCDate() == +d ? `${y}-${m}-${d}` : null }
+        function tdate(t) { let m = t.match(/(20\d\d)(\d\d)(\d\d)/); if (m) return vd(m[1], m[2], m[3]); m = t.match(/(\d\d)(\d\d)(20\d\d)/); return m ? vd(m[3], m[2], m[1]) : null }
+        function modal(h) { const o = document.createElement('div'); o.className = 'ov'; o.innerHTML = `<div class="nu card md">${h}<div class="row"><span></span><button class="btn" id="cx">Close</button></div></div>`; document.body.append(o); o.querySelector('#cx').onclick = () => o.remove() }
+        function ask(t, txt, def = '') { return new Promise(res => { const o = document.createElement('div'); o.className = 'ov'; o.innerHTML = `<div class="nu card md"><h2>${esc(t)}</h2>${txt ? `<textarea id="ai" rows="3">${esc(def)}</textarea>` : ''}<div class="row"><button class="btn" id="n">Cancel</button><button class="btn pri" id="y">Confirm</button></div></div>`; document.body.append(o); const c = v => { o.remove(); res(v) }; o.querySelector('#n').onclick = () => c(txt ? null : false); o.querySelector('#y').onclick = () => { if (txt) { const v = o.querySelector('#ai').value.trim(); if (!v) return toast('This field is required', 1); c(v) } else c(true) } }) }
+        function shell(tabs) { $('#app').innerHTML = `<div class="wrap"><header class="nu bar"><h1>Cancel Call Management</h1><div><span class="chip ins">${esc(S.label)}</span> <button class="btn sm" onclick="logout()">Logout</button></div></header>${tabs ? `<nav class="tabs">${tabs.map(t => `<button class="btn ${t[0] == tab ? 'on' : ''}" onclick="go('${t[0]}')">${t[1]}</button>`).join('')}</nav>` : ''}<main id="main"></main></div>` }
+        const go = t => { tab = t; render() };
+        function logout() { S = null; sessionStorage.clear(); tab = ''; F = {}; D = []; render() }
+        function render() { clearInterval(timer); if (!S) return login(); ({ esa, sde, bm: mon, admin: mon })[S.role]() }
+
+        /* ---------- Login / Register ---------- */
+        const FORMS = {
+            esa: `<label class="l">L-Code</label><input id="a" placeholder="Enter your L-Code" autocomplete="off"><button class="btn pri" onclick="doEsa()">Login</button>`,
+            staff: `<label class="l">ID</label><input id="a" autocomplete="username"><label class="l">Password</label><input id="b" type="password" autocomplete="current-password"><button class="btn pri" onclick="doStaff()">Login</button>`,
+            regE: `<label class="l">L-Code</label><input id="a" autocomplete="off"><label class="l">Company Name (Service Center Name)</label><input id="b"><button class="btn pri" onclick="regE()">Register</button>`,
+            regS: `<label class="l">SDE ID</label><input id="a"><label class="l">Password</label><input id="b" type="password"><label class="l">Confirm Password</label><input id="c" type="password"><button class="btn pri" onclick="regS()">Register</button>`
+        };
+        function login() {
+            $('#app').innerHTML = `<div class="wrap"><div class="nu card login"><h1>Cancel Call Management</h1><p class="mu">Sign in or create an account to continue.</p><div class="tabs">${[['esa', 'ESA Login'], ['staff', 'SDE / BM / Admin'], ['regE', 'ESA Register'], ['regS', 'SDE Register']].map(([k, l]) => `<button class="btn sm ${mode == k ? 'on' : ''}" onclick="mode='${k}';login()">${l}</button>`).join('')}</div>${FORMS[mode]}</div></div>`;
+            $('.login').onkeydown = e => { if (e.key == 'Enter') $('.login .pri').click() }
+        }
+        async function doEsa() {
+            const l = $('#a').value.trim().toUpperCase(); if (!l) return toast('Enter your L-Code', 1);
+            const r = await db.from('lcodes').select('id,company_id,companies(name)').eq('lcode', l).eq('active', true).maybeSingle();
+            if (r.error || !r.data) return toast('L-Code not found. Register first.', 1);
+            S = { role: 'esa', lcodeId: r.data.id, companyId: r.data.company_id, company: r.data.companies.name, label: r.data.companies.name }; save(); render()
+        }
+        async function doStaff() {
+            const u = $('#a').value.trim(), p = $('#b').value; if (!u || !p) return toast('Enter ID and password', 1);
+            const h = await sha(u, p), r = await db.rpc('staff_login', { p_uid: u, p_hash: h });
+            if (r.error || !r.data?.length) return toast('Invalid ID or password', 1);
+            const x = r.data[0]; S = { role: x.role, id: x.id, uid: x.user_id, h, label: `${x.user_id} (${RN[x.role]})` }; save(); tab = ''; render()
+        }
+        async function regE() {
+            const l = $('#a').value.trim().toUpperCase(), n = $('#b').value.trim().replace(/\s+/g, ' '); if (!l || !n) return toast('L-Code and Company Name are required', 1);
+            const ex = await db.from('lcodes').select('id,companies(name)').eq('lcode', l).maybeSingle();
+            if (ex.data) return ex.data.companies.name.toLowerCase() == n.toLowerCase() ? toast('Already registered. Please login.') : toast('This L-Code is already mapped to a different company', 1);
+            let co = (await db.from('companies').select('id').ilike('name', n.replace(/[%_]/g, '\\$&')).maybeSingle()).data;
+            if (!co) { const i = await db.from('companies').insert({ name: n }).select('id').single(); if (!ok(i)) return; co = i.data }
+            if (!ok(await db.from('lcodes').insert({ lcode: l, company_id: co.id }))) return;
+            toast('Registered. You can now login.'); mode = 'esa'; login()
+        }
+        async function regS() {
+            const u = $('#a').value.trim(), p = $('#b').value; if (!u || p.length < 6) return toast('Enter an ID and a password of 6+ characters', 1);
+            if (p != $('#c').value) return toast('Passwords do not match', 1);
+            if (!ok(await db.rpc('sde_register', { p_uid: u, p_hash: await sha(u, p) }))) return; toast('Registered. You can now login.'); mode = 'staff'; login()
+        }
+
+        /* ---------- ESA ---------- */
+        function esa() {
+            shell(); $('#main').innerHTML = `<div id="stt" class="grid"></div>
+<div class="nu card"><h2>New Cancel Call</h2><div class="frm"><div><label class="l">Company Name</label><input value="${esc(S.company)}" readonly></div>
+<div><label class="l">Ticket Number *</label><input id="tk" oninput="$('#cd').value=tdate(this.value)||''"></div>
+<div><label class="l">Created Date (from ticket)</label><input id="cd" readonly></div>
+<div class="full"><label class="l">Remarks *</label><textarea id="rm" rows="3"></textarea></div></div>
+<button class="btn pri" onclick="subm()">Submit Cancel Call</button></div>
+<div class="nu card"><h2>My Cancel Calls</h2><div id="ls"></div></div>`; loadE(); timer = setInterval(() => loadE(1), 20000)
+        }
+        async function loadE(q) {
+            const r = await db.from('v_calls').select('id,ticket_no,created_date,remarks,status,response_remark,responded_at').eq('lcode_id', S.lcodeId).order('submitted_at', { ascending: false }).limit(500);
+            if (r.error) return q || toast(r.error.message, 1); rows = r.data;
+            if (q && prev) rows.forEach(x => { if (prev[x.id] && prev[x.id] != x.status) toast(`Ticket ${x.ticket_no} was ${x.status}`) });
+            prev = Object.fromEntries(rows.map(x => [x.id, x.status])); drawE()
+        }
+        function drawE() {
+            const n = s => rows.filter(x => !s || x.status == s).length, L = rows.filter(x => !ef || x.status == ef);
+            $('#stt').innerHTML = [['', 'Total Submitted Calls'], ['Pending', 'Pending Calls'], ['Approved', 'Approved Calls'], ['Rejected', 'Rejected Calls']].map(([k, l]) => `<button class="nu stat ${ef == k ? 'sel' : ''}" onclick="ef='${k}';drawE()"><b>${n(k)}</b>${l}</button>`).join('');
+            $('#ls').innerHTML = L.length ? `<div class="tw"><table><tr><th>Ticket</th><th>Created</th><th>Remarks</th><th>Status</th><th>SDE Response</th></tr>${L.map(x => `<tr><td>${esc(x.ticket_no)}</td><td>${fd(x.created_date)}</td><td>${esc(x.remarks)}</td><td>${bd(x.status)}</td><td>${esc(x.response_remark || '—')}<div class="mu">${ft(x.responded_at)}</div></td></tr>`).join('')}</table></div>` : '<p class="mu">No calls here yet. Submit a Cancel Call above.</p>'
+        }
+        async function subm() {
+            if (busy) return; const t = $('#tk').value.trim(), m = $('#rm').value.trim(), d = tdate(t);
+            if (!t || !m) return toast('Ticket Number and Remarks are required', 1); if (!d) return toast('No date found in the Ticket Number (expected YYYYMMDD inside it)', 1);
+            busy = 1; const r = await db.from('cancel_calls').insert({ lcode_id: S.lcodeId, ticket_no: t.toUpperCase(), created_date: d, remarks: m }); busy = 0;
+            if (!ok(r)) return; toast('Cancel Call submitted successfully'); $('#tk').value = $('#rm').value = $('#cd').value = ''; loadE(1)
+        }
+
+        /* ---------- SDE ---------- */
+        async function loadO(sdeOnly) {
+            const q = [db.from('companies').select('id,name').order('name')];
+            if (!sdeOnly) q.push(db.from('lcodes').select('id,lcode,active,company_id,companies(name)').order('lcode'), db.from('v_staff').select('*').order('user_id'));
+            const [a, b, c] = await Promise.all(q); O = { companies: a.data || [], lcodes: b?.data || [], staff: c?.data || [] }
+        }
+        async function sde() {
+            tab = tab || 'calls'; const r = await db.from('sde_companies').select('company_id').eq('sde_id', S.id); S.sel = (r.data || []).map(x => x.company_id); save();
+            shell([['calls', 'Cancel Calls'], ['cos', 'Select Companies']]); tab == 'cos' ? cos() : calls(); pc = undefined; pollS(); timer = setInterval(pollS, 20000)
+        }
+        async function cos() { $('#main').innerHTML = `<div class="nu card"><div class="row"><h2>Select Companies</h2><span class="chip ins" id="cnt"></span></div><input id="cq" placeholder="Search company…" oninput="cl()"><div id="cb"></div></div>`; await loadO(1); cl() }
+        function cl() {
+            const q = $('#cq').value.toLowerCase(); $('#cnt').textContent = S.sel.length + ' selected';
+            $('#cb').innerHTML = O.companies.filter(c => c.name.toLowerCase().includes(q)).map(c => `<label class="ck"><input type="checkbox" ${S.sel.includes(c.id) ? 'checked' : ''} onchange="tg('${c.id}',this.checked)"><span>${esc(c.name)}</span></label>`).join('') || '<p class="mu">No companies yet.</p>'
+        }
+        async function tg(id, on) {
+            const r = on ? await db.from('sde_companies').insert({ sde_id: S.id, company_id: id }) : await db.from('sde_companies').delete().eq('sde_id', S.id).eq('company_id', id);
+            if (!ok(r)) return cl(); S.sel = on ? [...S.sel, id] : S.sel.filter(x => x != id); save(); cl()
+        }
+        function calls() { $('#main').innerHTML = `<div class="nu card"><div class="row"><h2>Cancel Calls</h2><select id="sfs" style="width:180px" onchange="sf=this.value;lc()">${['', 'Pending', 'Approved', 'Rejected'].map(s => `<option value="${s}" ${sf == s ? 'selected' : ''}>${s || 'All statuses'}</option>`).join('')}</select></div><div id="lb"></div></div>`; lc() }
+        async function lc() {
+            if (!S.sel.length) return $('#lb').innerHTML = '<p class="mu">Select companies first. Their Cancel Calls will appear here.</p>';
+            let q = db.from('v_calls').select('id,ticket_no,created_date,remarks,status,response_remark,company').in('company_id', S.sel).order('submitted_at', { ascending: false }).limit(200); if (sf) q = q.eq('status', sf);
+            const r = await q; if (!ok(r)) return;
+            $('#lb').innerHTML = r.data.map(x => `<div class="cc"><div class="row"><b>${esc(x.ticket_no)}</b>${bd(x.status)}</div><div class="kv"><span>Company</span><span>${esc(x.company)}</span><span>Created Date</span><span>${fd(x.created_date)}</span><span>ESA Remarks</span><span>${esc(x.remarks)}</span>${x.response_remark ? `<span>Your Response</span><span>${esc(x.response_remark)}</span>` : ''}</div>${x.status == 'Pending' ? `<button class="btn ok" onclick="act('${x.id}',1)">Approve</button> <button class="btn no" onclick="act('${x.id}',0)">Reject</button>` : ''}</div>`).join('') || '<p class="mu">No calls match.</p>'
+        }
+        async function act(id, yes) {
+            let p = { status: 'Approved', response_remark: 'Yes, Approved' };
+            if (yes) { if (!await ask('Approve this Cancel Call?')) return } else { const t = await ask('Reject: enter your remark', 1); if (t === null) return; p = { status: 'Rejected', response_remark: t } }
+            const r = await db.from('cancel_calls').update({ ...p, sde_id: S.id, responded_at: new Date().toISOString() }).eq('id', id).eq('status', 'Pending').select('id');
+            if (!ok(r)) return; toast(r.data.length ? 'Status updated and ESA notified' : 'Already handled by another SDE', !r.data.length); lc()
+        }
+        async function pollS() {
+            if (!S.sel.length) return; const r = await db.from('v_calls').select('id', { count: 'exact', head: true }).eq('status', 'Pending').in('company_id', S.sel); if (r.error) return;
+            if (pc !== undefined && r.count > pc) toast('New Cancel Call received'); pc = r.count; if (tab == 'calls' && $('#lb')) lc()
+        }
+
+        /* ---------- BM / Super Admin ---------- */
+        async function mon() { tab = tab || 'rec'; await loadO(); shell([['rec', 'Records'], ['dr', 'Drilldown'], ['lk', 'Companies & L-Codes'], ...(S.role == 'admin' ? [['mg', 'Manage']] : [])]); ({ rec, dr, lk, mg })[tab]() }
+        const opt = (a, lf, s) => `<option value="">All</option>` + a.map(x => `<option value="${x.id}" ${s == x.id ? 'selected' : ''}>${esc(lf(x))}</option>`).join('');
+        function fh() {
+            const v = k => esc(F[k] || ''); return `<div class="nu card"><h2>Filters</h2><div class="frm">
+<div><label class="l">Date From</label><input type="date" id="f_from" value="${v('from')}"></div>
+<div><label class="l">Date To</label><input type="date" id="f_to" value="${v('to')}"></div>
+<div><label class="l">Company Name</label><select id="f_co">${opt(O.companies, x => x.name, F.company)}</select></div>
+<div><label class="l">L-Code</label><input id="f_lc" value="${v('lcode')}"></div>
+<div><label class="l">ESA</label><select id="f_esa">${opt(O.lcodes, x => x.lcode + ' · ' + x.companies.name, F.esa)}</select></div>
+<div><label class="l">SDE</label><select id="f_sde">${opt(O.staff.filter(s => s.role == 'sde'), x => x.user_id, F.sde)}</select></div>
+<div><label class="l">Call Status</label><select id="f_st"><option value="">All</option>${['Pending', 'Approved', 'Rejected'].map(s => `<option ${F.status == s ? 'selected' : ''}>${s}</option>`).join('')}</select></div>
+<div><label class="l">Ticket Number</label><input id="f_tk" value="${v('ticket')}"></div></div>
+<button class="btn pri" onclick="runF()">Apply Filters</button> <button class="btn" onclick="F={};D=[];render()">Reset</button></div>`}
+        const readF = () => { const g = i => $('#' + i).value.trim(); F = { from: g('f_from'), to: g('f_to'), company: g('f_co'), lcode: g('f_lc'), esa: g('f_esa'), sde: g('f_sde'), status: g('f_st'), ticket: g('f_tk') } };
+        const aF = (q, ns) => { if (F.from) q = q.gte('created_date', F.from); if (F.to) q = q.lte('created_date', F.to); if (F.company) q = q.eq('company_id', F.company); if (F.lcode) q = q.ilike('lcode', '%' + F.lcode + '%'); if (F.esa) q = q.eq('lcode_id', F.esa); if (F.sde) q = q.eq('sde_id', F.sde); if (F.status && !ns) q = q.eq('status', F.status); if (F.ticket) q = q.ilike('ticket_no', '%' + F.ticket + '%'); return q };
+        function runF() { readF(); if (tab == 'dr') { D = []; ld() } else load(0) }
+        function rec() { $('#main').innerHTML = fh() + `<div id="sm" class="grid"></div><div class="nu card"><div class="row"><h2>Cancel Call Records</h2><div><button class="btn sm" onclick="ex('csv')">Export CSV</button> <button class="btn sm" onclick="ex('xlsx')">Export Excel</button></div></div><div id="rs"></div></div>`; load(0) }
+        async function load(p) {
+            PG = p; const [r, ...c] = await Promise.all([aF(db.from('v_calls').select('*', { count: 'exact' })).order('submitted_at', { ascending: false }).order('id').range(p * 25, p * 25 + 24), ...['Pending', 'Approved', 'Rejected'].map(s => aF(db.from('v_calls').select('id', { count: 'exact', head: true }), 1).eq('status', s))]);
+            if (!ok(r)) return; const [P, A, R] = c.map(x => x.count || 0);
+            $('#sm').innerHTML = [['Total', P + A + R], ['Pending', P], ['Approved', A], ['Rejected', R]].map(([l, n]) => `<div class="nu stat"><b>${n}</b>${l}</div>`).join('');
+            r.data.forEach(x => C[x.id] = x); const pages = Math.max(1, Math.ceil(r.count / 25));
+            $('#rs').innerHTML = (r.data.length ? `<div class="tw"><table><tr><th>Ticket</th><th>Created</th><th>Company</th><th>L-Code</th><th>SDE</th><th>Status</th><th>Remarks</th></tr>${r.data.map(x => `<tr class="cl" onclick="detail('${x.id}')"><td>${esc(x.ticket_no)}</td><td>${fd(x.created_date)}</td><td>${esc(x.company)}</td><td>${esc(x.lcode)}</td><td>${esc(x.sde || '—')}</td><td>${bd(x.status)}</td><td>${esc(x.remarks)}</td></tr>`).join('')}</table></div>` : '<p class="mu">No records match these filters.</p>') + `<div class="row" style="margin:14px 0 0"><button class="btn sm" ${p ? '' : 'disabled'} onclick="load(${p - 1})">Previous</button><span class="mu">Page ${p + 1} of ${pages} · ${r.count} records</span><button class="btn sm" ${p + 1 < pages ? '' : 'disabled'} onclick="load(${p + 1})">Next</button></div>`
+        }
+        function detail(id) { const x = C[id]; modal(`<h2>Ticket ${esc(x.ticket_no)}</h2><div class="kv"><span>Status</span><span>${bd(x.status)}</span><span>Company</span><span>${esc(x.company)}</span><span>L-Code</span><span>${esc(x.lcode)}</span><span>Created Date</span><span>${fd(x.created_date)}</span><span>Submitted At</span><span>${ft(x.submitted_at)}</span><span>ESA Remarks</span><span>${esc(x.remarks)}</span><span>SDE</span><span>${esc(x.sde || '—')}</span><span>SDE Response</span><span>${esc(x.response_remark || '—')}</span><span>Responded At</span><span>${ft(x.responded_at) || '—'}</span></div>`) }
+        async function ex(t) {
+            toast('Preparing export…'); let all = [], p = 0;
+            for (; ;) { const r = await aF(db.from('v_calls').select('*')).order('submitted_at', { ascending: false }).order('id').range(p * 1000, p * 1000 + 999); if (!ok(r)) return; all = all.concat(r.data); if (r.data.length < 1000) break; p++ }
+            if (!all.length) return toast('No records to export', 1);
+            const o = all.map(x => ({ 'Ticket Number': x.ticket_no, 'Created Date': x.created_date, 'Company Name': x.company, 'L-Code': x.lcode, 'SDE': x.sde || '', 'Status': x.status, 'ESA Remarks': x.remarks, 'SDE Response': x.response_remark || '', 'Responded At': x.responded_at || '', 'Submitted At': x.submitted_at })), n = 'cancel_calls_' + new Date().toISOString().slice(0, 10);
+            if (t == 'xlsx') { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(o), 'Cancel Calls'); XLSX.writeFile(wb, n + '.xlsx') }
+            else { const k = Object.keys(o[0]), c = v => '"' + String(v).replace(/"/g, '""') + '"', s = [k.map(c).join(','), ...o.map(r => k.map(a => c(r[a])).join(','))].join('\r\n'), a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + s], { type: 'text/csv' })); a.download = n + '.csv'; a.click() }
+            toast('Export complete: ' + all.length + ' records')
+        }
+        /* Drilldown: Company > SDE > ESA > Ticket */
+        const LV = [r => r.company, r => r.sde || 'Unassigned', r => r.lcode], LN = ['Company Name', 'SDE', 'ESA (L-Code)'];
+        function dr() { $('#main').innerHTML = fh() + `<div class="nu card"><h2>Drilldown</h2><div id="bc" class="bc"></div><div id="dv"></div></div>`; D = []; ld() }
+        async function ld() { const r = await aF(db.from('v_calls').select('*')).order('submitted_at', { ascending: false }).limit(5000); if (!ok(r)) return; DR = r.data; DR.forEach(x => C[x.id] = x); dd() }
+        const dig = i => { D.push(GK[i]); dd() };
+        function dd() {
+            const rs = DR.filter(r => D.every((v, i) => LV[i](r) == v));
+            $('#bc').innerHTML = `<button class="btn sm" onclick="D=[];dd()">All</button>` + D.map((v, i) => `<span class="mu">›</span><button class="btn sm" onclick="D=D.slice(0,${i + 1});dd()">${esc(v)}</button>`).join('');
+            if (D.length < 3) {
+                const g = {}; rs.forEach(r => { const k = LV[D.length](r); (g[k] = g[k] || { n: 0, Pending: 0, Approved: 0, Rejected: 0 }).n++; g[k][r.status]++ }); GK = Object.keys(g);
+                $('#dv').innerHTML = GK.length ? `<div class="tw"><table><tr><th>${LN[D.length]}</th><th>Total</th><th>Pending</th><th>Approved</th><th>Rejected</th></tr>${GK.map((k, i) => `<tr class="cl" onclick="dig(${i})"><td>${esc(k)}</td><td>${g[k].n}</td><td>${g[k].Pending}</td><td>${g[k].Approved}</td><td>${g[k].Rejected}</td></tr>`).join('')}</table></div>` : '<p class="mu">No data for these filters.</p>'
+            }
+            else $('#dv').innerHTML = `<div class="tw"><table><tr><th>Ticket</th><th>Created</th><th>Status</th><th>Remarks</th></tr>${rs.map(x => `<tr class="cl" onclick="detail('${x.id}')"><td>${esc(x.ticket_no)}</td><td>${fd(x.created_date)}</td><td>${bd(x.status)}</td><td>${esc(x.remarks)}</td></tr>`).join('')}</table></div>`
+        }
+        function lk() {
+            const g = {}; O.companies.forEach(c => g[c.id] = { n: c.name, l: [] }); O.lcodes.forEach(l => g[l.company_id]?.l.push(l.lcode + (l.active ? '' : ' (inactive)')));
+            $('#main').innerHTML = `<div class="nu card"><h2>Company Names and L-Codes</h2><div class="tw"><table><tr><th>Company Name</th><th>L-Codes</th><th>Count</th></tr>${Object.values(g).map(x => `<tr><td>${esc(x.n)}</td><td>${x.l.map(esc).join(', ') || '—'}</td><td>${x.l.length}</td></tr>`).join('')}</table></div></div>`
+        }
+
+        /* ---------- Super Admin: manage ---------- */
+        function mg() {
+            $('#main').innerHTML = `
+<div class="nu card"><h2>Companies</h2><div class="row"><input id="nc" placeholder="New company name" style="flex:1"><button class="btn pri" onclick="addCo()">Add Company</button></div>
+<div class="tw"><table><tr><th>Name</th><th></th></tr>${O.companies.map(c => `<tr><td>${esc(c.name)}</td><td><button class="btn sm" onclick="renCo('${c.id}')">Rename</button></td></tr>`).join('')}</table></div></div>
+<div class="nu card"><h2>L-Codes (ESA accounts)</h2><div class="row"><input id="nl" placeholder="L-Code" style="flex:1"><select id="nlc" style="flex:2">${O.companies.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select><button class="btn pri" onclick="addLc()">Add L-Code</button></div>
+<div class="tw"><table><tr><th>L-Code</th><th>Company Name (one only)</th><th>Status</th></tr>${O.lcodes.map(l => `<tr><td>${esc(l.lcode)}</td><td><select onchange="remap('${l.id}',this.value)">${O.companies.map(c => `<option value="${c.id}" ${c.id == l.company_id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select></td><td><button class="btn sm ${l.active ? 'ok' : 'no'}" onclick="tgLc('${l.id}',${!l.active})">${l.active ? 'Active' : 'Inactive'}</button></td></tr>`).join('')}</table></div></div>
+<div class="nu card"><h2>SDE, BM and Admin accounts</h2><div class="row"><input id="ns" placeholder="ID" style="flex:1"><input id="np" type="password" placeholder="Password" style="flex:1"><select id="nr" style="flex:1"><option value="sde">SDE</option><option value="bm">BM</option><option value="admin">Super Admin</option></select><button class="btn pri" onclick="addSt()">Create Account</button></div>
+<div class="tw"><table><tr><th>ID</th><th>Role</th><th>Status</th><th></th></tr>${O.staff.map(s => `<tr><td>${esc(s.user_id)}</td><td>${RN[s.role]}</td><td><button class="btn sm ${s.active ? 'ok' : 'no'}" ${s.id == S.id ? 'disabled' : ''} onclick="stU('${s.id}',null,${!s.active})">${s.active ? 'Active' : 'Inactive'}</button></td><td><button class="btn sm" onclick="rsSt('${s.id}')">Reset Password</button></td></tr>`).join('')}</table></div></div>`
+        }
+        const re = async (m) => { await loadO(); mg(); toast(m) };
+        async function addCo() { const n = $('#nc').value.trim(); if (n && ok(await db.from('companies').insert({ name: n }))) re('Company added') }
+        async function renCo(id) { const c = O.companies.find(x => x.id == id), n = await ask('Rename company', 1, c.name); if (n && ok(await db.from('companies').update({ name: n }).eq('id', id))) re('Company renamed') }
+        async function addLc() { const l = $('#nl').value.trim().toUpperCase(); if (l && ok(await db.from('lcodes').insert({ lcode: l, company_id: $('#nlc').value }))) re('L-Code added') }
+        async function remap(id, c) { if (ok(await db.from('lcodes').update({ company_id: c }).eq('id', id))) re('Mapping updated') }
+        async function tgLc(id, a) { if (ok(await db.from('lcodes').update({ active: a }).eq('id', id))) re('L-Code updated') }
+        async function addSt() {
+            const u = $('#ns').value.trim(), p = $('#np').value; if (!u || p.length < 6) return toast('Enter an ID and a password of 6+ characters', 1);
+            if (ok(await db.rpc('staff_create', { a_uid: S.uid, a_hash: S.h, p_uid: u, p_hash: await sha(u, p), p_role: $('#nr').value }))) re('Account created')
+        }
+        async function stU(id, h, a) { if (ok(await db.rpc('staff_update', { a_uid: S.uid, a_hash: S.h, p_id: id, p_hash: h, p_active: a }))) re('Account updated') }
+        async function rsSt(id) { const s = O.staff.find(x => x.id == id), p = await ask('New password for ' + s.user_id, 1); if (p && p.length >= 6) stU(id, await sha(s.user_id, p), null); else if (p) toast('Use 6+ characters', 1) }
+        render();
+    </script>
+</body>
+
+</html>
